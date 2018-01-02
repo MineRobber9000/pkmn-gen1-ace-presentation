@@ -1,0 +1,42 @@
+<section>
+<h3>How using items works</h3>
+<ul>
+<li class="fragment"><code>UseItem</code> is called with an item ID at <code>$CF91</code>.</li>
+</ul>
+</section>
+<section>
+<h3>How using items works</h3>
+<ul>
+<li class="fragment">From <code>engine/items/items.asm</code> in the disassembly:</li>
+</ul>
+<pre>
+<code class="fragment stretch" data-trim>
+UseItem_:
+	ld a,1
+	ld [wActionResultOrTookBattleTurn],a
+	ld a,[wcf91] ;contains item_ID
+	cp a,HM_01 ; HM_01 = $C4
+	jp nc,ItemUseTMHM ; special handling of TMs and HMs
+	ld hl,ItemUsePtrTable ; Item pointer table
+	dec a
+	add a
+	ld c,a
+	ld b,0
+	add hl,bc
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	jp hl
+</code>
+</pre>
+</section>
+<section>
+<h3>How using items works</h3>
+<p class="fragment">So for item id J...</p>
+<ul>
+<li class="fragment">J is decreased (J=J-1)
+<li class="fragment">J is doubled (J=J*2)</li>
+<li class="fragment">The result is 16-bit added to the pointer table address (HL = ItemUsePtrTable, HL = HL + (u_int16)J)</li>
+<li class="fragment">The result is jumped to. (HL = address_from(HL), PC=HL)</li>
+</ul>
+</section>
